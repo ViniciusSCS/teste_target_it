@@ -3,10 +3,11 @@
         <header>
             <nav-bar cor="nav-wrapper"
                      url="/">
-                <li><router-link class="blue-text text-darken-4" to="/login">LOGIN</router-link></li>
-                <li><router-link class="blue-text text-darken-4" to="/cadastro">CADASTRO</router-link></li>
-                <li><router-link to="/perfil">Vinicius Sarmento</router-link></li>
-                <li><a>Sair</a></li>
+                <li><router-link to="/">HOME</router-link></li>
+                <li v-if="!usuario"><router-link class="grey-text text-lighten-3" to="/login">LOGIN</router-link></li>
+                <li v-if="!usuario"><router-link class="grey-text text-lighten-3" to="/cadastro">CADASTRO</router-link></li>
+                <li v-if="usuario"><router-link to="/perfil">{{ usuario.name }}</router-link></li>
+                <li v-if="usuario"><a v-on:click="sair()">Sair</a></li>
             </nav-bar>
         </header>
 
@@ -52,9 +53,30 @@ export default {
     name: "Site",
     components: {NavBar, CardMenu, Grid, Rodape},
     data() {
-        return {}
+        return {
+            usuario: false,
+        }
     },
-    methods:{}
+    created() {
+        var self = this
+
+        var aux = self.$store.getters.getUsuario
+        if (aux) {
+            self.usuario = self.$store.getters.getUsuario
+        } else {
+            self.$router.push('/login')
+        }
+    },
+    methods:{
+        sair() {
+            var self = this
+
+            self.$store.commit('setUsuario', null)
+            sessionStorage.clear()
+            self.usuario = false
+            self.$router.push('/login')
+        },
+    }
 }
 </script>
 

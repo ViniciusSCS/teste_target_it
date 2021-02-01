@@ -1,13 +1,21 @@
 <template>
-
-    <login-template>
+    <site>
         <span slot="menuEsquerdo">
-            <ul>
-                  <img src="@/assets/logo.png" alt="" style="" class="displayed responsive-img">
-            </ul>
+            <grid tamanho="4">
+                <img :src="usuario.imagem" alt=""
+                     class="circle responsive-img">
+            </grid>
+            <grid tamanho="8">
+                <span class="black-text">
+                    <h5>{{ usuario.name }}</h5>
+                </span>
+            </grid>
         </span>
 
         <span slot="principal">
+
+            <h2>PERFIL</h2>
+
             <div id="login-page" class="row">
                 <grid class="z-depth-6 card-panel" tamanho="12">
                     <div class="row">
@@ -34,6 +42,17 @@
                         </grid>
                     </div>
 
+                    <div class="file-field input-field">
+                        <div class="btn green">
+                            <i class="material-icons ">add_a_photo</i>
+                            <span>Imagem</span>
+                            <input type="file" v-on:change="upload">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text">
+                        </div>
+                    </div>
+
                     <div class="row">
                         <grid class="input-field" tamanho="12">
                             <i class="material-icons prefix">lock_outline</i>
@@ -52,65 +71,108 @@
 
                     <div class="row">
                         <grid class="input-field" tamanho="12">
-                            <button class="btn waves-effect waves-light col s12" v-on:click="cadastro()">Salvar</button>
-                        </grid>
-                    </div>
-
-                    <div class="row">
-                        <grid class="input-field" tamanho="6 m6 l6">
-                            <p class="margin medium-small">
-                                <router-link class="btn waves-effect waves-light blue"
-                                             to="/login">Já possui conta</router-link>
-                            </p>
+                            <button class="btn waves-effect waves-light col s12" v-on:click="perfil()">
+                                Atualizar
+                            </button>
                         </grid>
                     </div>
                 </grid>
             </div>
         </span>
-    </login-template>
-
+    </site>
 </template>
 
 <script>
+import Site from "@/templates/Site";
 import Grid from "@/components/layouts/Grid";
-import LoginTemplate from "./LoginTemplate";
+
+
+import axios from "axios"
 
 export default {
-    name: "Cadastro",
+    name: "Perfil",
     data() {
         return {
+            usuario: false,
+
             name: '',
             email: '',
-            password: '',
+            imagem: '',
             telefone: '',
+            password: '',
             password_confirmation: '',
         }
     },
-    components: {LoginTemplate, Grid},
+    created() {
+        var self = this
+
+        var aux = self.$store.getters.getUsuario
+        if (aux) {
+            self.usuario = self.$store.getters.getUsuario
+            self.name = self.usuario.name
+            self.email = self.usuario.email
+            self.imagem = self.usuario.imagem
+            self.telefone = self.usuario.telefone
+            self.password = self.usuario.password
+            self.password_confirmation = self.usuario.password_confirmation
+        }
+    },
+    components: {Site, Grid},
     methods: {
-        cadastro() {
+
+        upload(event) {
             var self = this
 
-            self.$http.post(self.$urlApi + 'cadastro', {
+            var file = event.target.files || event.dataTransfer.files;
+            if (!file.length) {
+                return
+            }
+
+            var reader = new FileReader()
+
+            reader.onloadend = (event) => {
+                self.imagem = event.target.result
+            }
+            reader.readAsDataURL(file[0])
+        },
+
+        perfil() {
+            var self = this
+
+            self.$http.put(self.$urlApi + 'perfil', {
                 name: self.name,
                 email: self.email,
-                password: self.password,
+                imagem: self.imagem,
                 telefone: self.telefone,
+                password: self.password,
                 password_confirmation: self.password_confirmation,
 
-            })
+            }, {"headers": {"authorization": "Bearer " + self.$store.getters.getToken}})
                 .then(function (response) {
                     if (response.data.status) {
                         Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Cadastro realizado com sucesso!!',
-                            showConfirmButton: false,
-                            timer: 1500
+                            title: 'Deseja mesmo atualizar?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            cancelButtonText: 'Cancelar!',
+                            confirmButtonText: 'Sim, Atualizar!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: 'Atualização realizada com sucesso!!',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                })
+                                self.usuario = response.data.usuario
+                                self.$store.commit('setUsuario', response.data.usuario)
+                                sessionStorage.setItem('usuario', JSON.stringify(self.usuario))
+                            }
                         })
-                        self.$store.commit('setUsuario', response.data.usuario)
-                        sessionStorage.setItem('usuario', JSON.stringify(response.data.usuario))
-                        self.$router.push('/')
+
                     } else if (response.data.status == false && response.data.validacao) {
                         var erros = '';
                         for (var e of Object.values(response.data.erros)) {
@@ -126,7 +188,7 @@ export default {
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
-                            text: 'Erro ao cadastrar Usuário!',
+                            text: 'Erro ao atualizar Usuário!',
                         })
                     }
                 })
@@ -136,7 +198,7 @@ export default {
                         title: 'Oops...',
                         text: 'ERRO, tente novamente mais tarde!',
                     })
-                });
+                })
         },
     }
 }

@@ -2,9 +2,8 @@
     <span>
         <header>
                 <nav-bar cor="nav-wrapper"
-                         logo="Sistema SPA"
                          url="http://engenheirocompvinicius.com.br">
-                    <li v-if="usuario"><router-link to="/perfil">Vinicius</router-link></li>
+                    <li v-if="usuario"><router-link to="/perfil">{{usuario.name}}</router-link></li>
                     <li v-if="usuario"><a>Sair</a></li>
                 </nav-bar>
         </header>
@@ -53,7 +52,15 @@ export default {
         }
     },
     components: {NavBar, Grid, Rodape, Site, CardMenu},
-    created() {},
+    created() {
+        var self = this
+
+        var aux = self.$store.getters.getUsuario
+        if (aux) {
+            self.$store.getters.getUsuario
+            self.$router.push('/')
+        }
+    },
     methods: {}
 }
 </script>
