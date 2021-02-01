@@ -1,11 +1,15 @@
 <template>
-
+    <div :class="'col s'+ tamanho">
+        <slot/>
+    </div>
 </template>
 
 <script>
 export default {
-    name: 'coloca_nome',
-    props:[],
+    name: 'Grid',
+    props: [
+        'tamanho',
+    ],
     data() {
         return {}
     }
