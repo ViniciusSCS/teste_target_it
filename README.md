@@ -28,8 +28,8 @@ seguintes ações:
 5. Exibir dados do usuário
 
 Deverá ser criada uma camada de ACL simples.
-Não é necessário tela para atribuição de permissões, apenas crie os vínculos necessários para um usuário possa ou não realizar uma ação. Esta ação deve ser c ontrolada nos endpoints da aplicação.
-No front end que faça o consumo destes endpoint s
+Não é necessário tela para atribuição de permissões, apenas crie os vínculos necessários para um usuário possa ou não realizar uma ação. Esta ação deve ser controlada nos endpoints da aplicação.
+No front end que faça o consumo destes endpoints
 Dados do Usuário
 -Nome
 -Email
@@ -38,7 +38,7 @@ Da implementação:
 1. Crie um repositório de versionamento GIT para salvar seu código;
 2. Versione seu código no repositório
 3. Utilize a linguagem PHP /JS com algum Framework (De preferência Laravel ou Exp ressJ S/ A donisJS
-4. Utilize algum framework CSS como B ootstrap ou M aterialize;
+4. Utilize algum framework CSS como Bootstrap ou Materialize;
 5. Utilize algum fram e work JavaScript como Angular, VueJS ou ReactJS (Não
 6. Elabore uma documentação de com orientações de instalação e forma de uso (READ.M D
 7. Descreva nesta documentação, a respostas para as questões abaixo
